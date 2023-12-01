@@ -1,0 +1,148 @@
+@keyframes circleAnimation {
+    from {
+      /* Initial styles */
+      transform: translate(300%, 0%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0, 30);
+      opacity: 1;
+    }
+  }
+  
+  .leftmid {
+    animation: circleAnimation 0.5s ease-out;
+  }
+  
+  @keyframes circlAnimation {
+    from {
+      /* Initial styles */
+      transform: translate(-50%, 300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(30,0);
+      opacity: 1;
+    }
+  }
+  
+  .topmid {
+    animation: circlAnimation 0.5s ease-out;
+  }
+  
+
+
+  @keyframes cirleAnimation {
+    from {
+      /* Initial styles */
+      transform: translate(0%, -300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(30,0);
+      opacity: 1;
+    }
+  }
+  
+  .bottommid {
+    animation: cirleAnimation 0.5s ease-out;
+  }
+  
+
+
+
+  @keyframes circleAimation {
+    from {
+      /* Initial styles */
+      transform: translate(-300%, 0%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0,30);
+      opacity: 1;
+    }
+  }
+  
+  .rightmid {
+    animation: circleAimation 0.5s ease-out;
+  }
+
+
+
+  @keyframes circleAimaion {
+    from {
+      /* Initial styles */
+      transform: translate(300%, 300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0);
+      opacity: 1;
+    }
+  }
+  
+  .leftup {
+    animation: circleAimaion 0.5s ease-out;
+  }
+
+
+
+  @keyframes circleAimaio {
+    from {
+      /* Initial styles */
+      transform: translate(-300%, -300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0);
+      opacity: 1;
+    }
+  }
+  
+  .rightbottom {
+    animation: circleAimaio 0.5s ease-out;
+  }
+
+
+
+  @keyframes circleAimain {
+    from {
+      /* Initial styles */
+      transform: translate(-300%, 300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0);
+      opacity: 1;
+    }
+  }
+  
+  .rightup {
+    animation: circleAimain 0.5s ease-out;
+  }
+
+
+
+  @keyframes circleAimin {
+    from {
+      /* Initial styles */
+      transform: translate(300%, -300%);
+      opacity: 0;
+    }
+    to {
+      /* Final styles */
+      transform: translate(0);
+      opacity: 1;
+    }
+  }
+  
+  .leftbottom {
+    animation: circleAimin 0.5s ease-out;
+  }
