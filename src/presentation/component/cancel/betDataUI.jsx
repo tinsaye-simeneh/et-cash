@@ -133,7 +133,13 @@ const BetDataUI = (props) => {
                       {bet.betType}
                     </td>
                     <td className="px-0 py-2 border border-gray-400">
-                      {bet.selection}
+                      {bet.selection
+                        .map((element, index) => {
+                          return index === bet.selection.length - 1
+                            ? element
+                            : element + ",";
+                        })
+                        .join("")}
                     </td>
                     <td className="px-0 py-2 border border-gray-400">
                       {bet.odds}
