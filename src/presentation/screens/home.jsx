@@ -179,8 +179,10 @@ const Home = () => {
           .split("/")
           .map((value) => parseInt(value, 10));
         selectionValue = splitValues;
-      } else if (slip.game === "win") {
+      } else if (slip.game === "win" && slip.gameType === "SpinAndWin") {
         selectionValue = [parseInt(slip.value)];
+      } else if (slip.game === "win" && slip.gameType === "Keno") {
+        selectionValue = slip.value.split(",").map(Number);
       } else {
         selectionValue = slip.value;
       }
