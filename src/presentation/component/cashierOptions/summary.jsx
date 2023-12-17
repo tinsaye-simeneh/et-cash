@@ -271,10 +271,7 @@ const Summary = () => {
                       {data.withdraws}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.deposits - data.currentBalance}
-                    </td>
-                    <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.unclaimedWinnings}
+                      {data.currentBalance}
                     </td>
                   </tr>
                 )}
