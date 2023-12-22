@@ -18,6 +18,7 @@ const Summary = () => {
   const [selectedDateFrom, setSelectedDateFrom] = useState(initialDateFrom);
   const [selectedDateTo, setSelectedDateTo] = useState(initialDateTo);
   const dispatch = useDispatch();
+  let username = localStorage.getItem("username");
 
   const handleDateChangeFrom = (event) => {
     const newDate = new Date(event.target.value);
@@ -39,9 +40,21 @@ const Summary = () => {
     };
     try {
       const response = await dispatch(getReportAction({ body }));
+
       if (response.payload) {
+        const userData = response.payload[username];
         setDisabled(true);
-        setData(response.payload.tinsaye);
+
+        const objData = {
+          deposits: userData.deposits,
+          bets: userData.bets,
+          cancellations: userData.cancellations,
+          redeemed: userData.redeemed,
+          withdraws: userData.withdraws,
+          currentBalance: userData.currentBalance,
+        };
+        setData(objData);
+        console.log(objData);
       }
     } catch (error) {
       alert("Something went wrong");
