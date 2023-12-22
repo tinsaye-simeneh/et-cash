@@ -10,6 +10,7 @@ const CashierOptions = function (props) {
   const [currentPage, setCurrentPage] = useState("report");
   const dispatch = useDispatch();
   const [userBalance, setUserBalance] = useState(0);
+  let username = localStorage.getItem("username");
 
   const getReport = async () => {
     const currentDate = new Date();
@@ -37,8 +38,17 @@ const CashierOptions = function (props) {
     try {
       const response = await dispatch(getReportAction({ body }));
       if (response.payload) {
-        setUserBalance(response.payload.tinsaye.currentBalance);
-        console.log(response.payload.tinsaye.currentBalance);
+        const userData = response.payload[username];
+
+        const objData = {
+          deposits: userData.deposits,
+          bets: userData.bets,
+          cancellations: userData.cancellations,
+          redeemed: userData.redeemed,
+          withdraws: userData.withdraws,
+          currentBalance: userData.currentBalance,
+        };
+        setUserBalance(objData.currentBalance);
       }
     } catch (error) {
       alert("Something went wrong");
