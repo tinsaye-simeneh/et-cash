@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const Spinnaxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/game/current",
+  baseURL: "https://api.games.dytech-services.com/v1/game/current",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -9,7 +9,7 @@ export const Spinnaxios = axios.create({
 });
 
 export const Kenoaxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/game/current",
+  baseURL: "https://api.games.dytech-services.com/v1/game/current",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -19,7 +19,7 @@ export const Kenoaxios = axios.create({
 const token = localStorage.getItem("token");
 
 export const Betaxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/bet/",
+  baseURL: "https://api.games.dytech-services.com/v1/bet/",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -28,7 +28,7 @@ export const Betaxios = axios.create({
 });
 
 export const Retaileraxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/admin/retailer/",
+  baseURL: "https://api.games.dytech-services.com/v1/admin/retailer/",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -37,7 +37,7 @@ export const Retaileraxios = axios.create({
 });
 
 export const EventResultaxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/game/",
+  baseURL: "https://api.games.dytech-services.com/v1/game/",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -46,7 +46,7 @@ export const EventResultaxios = axios.create({
 });
 
 const Authaxios = axios.create({
-  baseURL: "https://api.games.etvirtual.com/v1/cashier/",
+  baseURL: "https://api.games.dytech-services.com/v1/cashier/",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
