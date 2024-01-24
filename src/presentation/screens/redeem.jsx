@@ -80,6 +80,7 @@ const Redeem = (props) => {
               onInput={(event) => {
                 setInput(event.target.value);
               }}
+              autoFocus
             />
 
             <div className="grid grid-cols-3 gap-5">
