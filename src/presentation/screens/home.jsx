@@ -228,7 +228,7 @@ const Home = () => {
   let data = JSON.stringify({
     printContent: [
       {
-        LineItem: slipResponse?._id,
+        LineItem: slipResponse?.slipReference,
         FontSize: 8,
         Bold: false,
         Alignment: 2,
@@ -333,7 +333,7 @@ const Home = () => {
         Underline: false,
       },
       {
-        LineItem: slipResponse?._id,
+        LineItem: slipResponse?.slipReference,
         FontSize: 8,
         Bold: false,
         Alignment: 1,
