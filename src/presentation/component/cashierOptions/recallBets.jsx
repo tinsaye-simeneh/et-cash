@@ -4,11 +4,13 @@ import { FaPrint } from "react-icons/fa";
 import { getBetsAction } from "../../../stores/bet/getBetsAction";
 import { useDispatch } from "react-redux";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 const RecallBets = () => {
   const [data, setData] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [slip, setSlip] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -33,6 +35,208 @@ const RecallBets = () => {
   };
 
   const slicedArray = data?.slice(0, 15);
+
+  const totalStakeCalculater = (games) => {
+    let ret = 0;
+    for (let game of games) {
+      ret += game.amount;
+    }
+    return ret;
+  };
+
+  console.log(slip);
+
+  let jsonData = JSON.stringify({
+    printContent: [
+      {
+        LineItem: slip?.slipReference || "Slip Reference",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: localStorage.getItem("retailerName"),
+        FontSize: 8,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: localStorage.getItem("username"),
+        FontSize: 8,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Time: " + new Date().toLocaleString() + " " + "UTC + 3",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: slip?.betType,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Br " + slip?.stake,
+        FontSize: 8,
+        Bold: true,
+        Alignment: 2,
+        NewLine: false,
+        Underline: false,
+      },
+      {
+        LineItem:
+          slip?.gameType +
+            slip?.createdAt.slice(0, 10) +
+            " " +
+            slip?.createdAt.slice(11, 19) +
+            " " +
+            slip?.gameIdNumber || "Game ID Number",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: slip?.selection.join(", ") || "Selection",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Total Stake",
+        FontSize: 9,
+        Bold: true,
+        Alignment: 0,
+        NewLine: false,
+        Underline: false,
+      },
+      {
+        LineItem: "Br " + slip?.stake,
+        FontSize: 9,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Min Payout (Incl. Stake)",
+        FontSize: 9,
+        Bold: true,
+        Alignment: 0,
+        NewLine: false,
+        Underline: false,
+      },
+      {
+        LineItem: "Br " + slip?.stake,
+        FontSize: 9,
+        Bold: true,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Max Payout (Incl. Stake)",
+        FontSize: 9,
+        Bold: true,
+        Alignment: 0,
+        NewLine: false,
+        Underline: false,
+      },
+      {
+        LineItem: "Br " + slip?.stake * slip?.odds,
+        FontSize: 9,
+        Bold: true,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: slip?.Reference || "reference",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 1,
+        NewLine: false,
+        Underline: false,
+        isBarcode: true,
+      },
+    ],
+  });
+
+  const handlePrint = async () => {
+    try {
+      const printResponse = await fetch("http://localhost:8084/print", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonData,
+      });
+      if (printResponse) {
+      } else {
+      }
+    } catch (error) {}
+  };
+
+  const handlePrintAndCheckOnlineStatus = async () => {
+    try {
+      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      if (onlineResponse.data) {
+        handlePrint();
+      } else {
+        alert("please plug a printer");
+      }
+    } catch (error) {}
+  };
+
+  console.log(slicedArray);
 
   return (
     <div className="w-full p-4 border-green-500 border-[1px]">
@@ -114,6 +318,7 @@ const RecallBets = () => {
                     <th className="pl-5" scope="col">
                       stake
                     </th>
+                    <th className="pl-5" scope="col"></th>
                   </tr>
                 </thead>
 
@@ -149,7 +354,7 @@ const RecallBets = () => {
                         {localStorage.getItem("username")}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
-                        {data.slipId}
+                        {data.slipId.slice(0, 4) + "..."}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
                         {data.gameType}
@@ -173,6 +378,15 @@ const RecallBets = () => {
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
                         {data.stake}
                       </td>
+                      <button
+                        className="w-[60px] rounded-md h-[40px] my-2 border-[1px] px-4 border-green-500 bg-white"
+                        onClick={() => {
+                          setSlip(data);
+                          handlePrintAndCheckOnlineStatus();
+                        }}
+                      >
+                        <FaPrint className="w-full fill-green-500" />
+                      </button>
                     </tr>
                   ))}
                 </tbody>
