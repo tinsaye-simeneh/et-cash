@@ -5,6 +5,7 @@ import { FaPrint, FaRegFileExcel } from "react-icons/fa";
 import { getReportAction } from "../../../stores/reports/getReportAction";
 import { useDispatch } from "react-redux";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 const Summary = () => {
   const initialDateFrom = new Date();
@@ -123,6 +124,177 @@ const Summary = () => {
       };
       download(csvFromArrayOfObjects(csv), "report.csv");
     }
+  };
+
+  const fromDate =
+    selectedDateFrom.toISOString().slice(0, 10) +
+    ", " +
+    selectedDateFrom.toISOString().slice(11, 19);
+
+  const toDate =
+    selectedDateTo.toISOString().slice(0, 10) +
+    ", " +
+    selectedDateTo.toISOString().slice(11, 19);
+
+  const mappedData = data && {
+    deposits: data.deposits,
+    bets: data.bets,
+    cancellations: data.cancellations,
+    redeemed: data.redeemed,
+    withdraws: data.withdraws,
+    currentBalance: data.currentBalance,
+  };
+
+  let jsonData = JSON.stringify({
+    printContent: [
+      {
+        LineItem: localStorage.getItem("retailerName"),
+        FontSize: 8,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: localStorage.getItem("username"),
+        FontSize: 8,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem:
+          "Report Time: " + new Date().toLocaleString() + " " + "UTC + 3",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Report Details",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 1,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "From Date: " + fromDate + " " + "UTC + 3",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "To Date: " + toDate + " " + "UTC + 3",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "",
+        FontSize: 7,
+        Bold: false,
+        Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Deposits: " + mappedData?.deposits,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Bets: " + mappedData?.bets,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Cancellations: " + mappedData?.cancellations,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Redeemed: " + mappedData?.redeemed,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Withdraws: " + mappedData?.withdraws,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "End Balance: " + mappedData?.currentBalance,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+    ],
+  });
+
+  const handlePrint = async () => {
+    try {
+      const printResponse = await fetch("http://localhost:8084/print", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsonData,
+      });
+      if (printResponse) {
+      } else {
+      }
+    } catch (error) {}
+  };
+
+  const handlePrintAndCheckOnlineStatus = async () => {
+    try {
+      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      if (onlineResponse.data) {
+        handlePrint();
+      } else {
+        alert("please plug a printer");
+      }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -250,7 +422,10 @@ const Summary = () => {
                 )}
                 {data && (
                   <tr className="hover:bg-slipGray h-[45px] odd:bg-tableGray even:bg-white text-center">
-                    <button className="w-[60px] rounded-md h-[40px] my-2 border-[1px] px-4 border-green-500 bg-white">
+                    <button
+                      className="w-[60px] rounded-md h-[40px] my-2 border-[1px] px-4 border-green-500 bg-white"
+                      onClick={handlePrintAndCheckOnlineStatus}
+                    >
                       <FaPrint className="w-full fill-green-500" />
                     </button>
 
