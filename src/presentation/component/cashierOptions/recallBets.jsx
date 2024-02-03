@@ -44,8 +44,6 @@ const RecallBets = () => {
     return ret;
   };
 
-  console.log(slip);
-
   let jsonData = JSON.stringify({
     printContent: [
       {
@@ -235,8 +233,6 @@ const RecallBets = () => {
       }
     } catch (error) {}
   };
-
-  console.log(slicedArray);
 
   return (
     <div className="w-full p-4 border-green-500 border-[1px]">
