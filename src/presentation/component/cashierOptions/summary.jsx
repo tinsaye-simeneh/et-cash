@@ -206,7 +206,12 @@ const Summary = () => {
         Underline: false,
       },
       {
-        LineItem: "From Date: " + fromDate + "UTC + 3",
+        LineItem:
+          "From Date: " +
+          formatDateTime(selectedDateFrom).slice(0, 10) +
+          ", " +
+          formatDateTime(selectedDateFrom).slice(11, 19) +
+          " UTC + 3",
         FontSize: 7,
         Bold: false,
         Alignment: 0,
@@ -214,7 +219,12 @@ const Summary = () => {
         Underline: false,
       },
       {
-        LineItem: "To Date: " + toDate + "UTC + 3",
+        LineItem:
+          "To Date: " +
+          formatDateTime(selectedDateTo).slice(0, 10) +
+          ", " +
+          formatDateTime(selectedDateTo).slice(11, 19) +
+          " UTC + 3",
         FontSize: 7,
         Bold: false,
         Alignment: 0,
@@ -233,7 +243,7 @@ const Summary = () => {
         LineItem: "Deposits: " + mappedData?.deposits,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -241,7 +251,7 @@ const Summary = () => {
         LineItem: "Bets: " + mappedData?.bets,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -249,7 +259,7 @@ const Summary = () => {
         LineItem: "Cancellations: " + mappedData?.cancellations,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -257,7 +267,7 @@ const Summary = () => {
         LineItem: "Redeemed: " + mappedData?.redeemed,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -265,7 +275,7 @@ const Summary = () => {
         LineItem: "Withdraws: " + mappedData?.withdraws,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -273,7 +283,7 @@ const Summary = () => {
         LineItem: "End Balance: " + mappedData?.currentBalance,
         FontSize: 8,
         Bold: false,
-        Alignment: 0,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
