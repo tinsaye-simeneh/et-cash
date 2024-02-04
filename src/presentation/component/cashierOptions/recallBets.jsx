@@ -347,7 +347,7 @@ const RecallBets = () => {
                       className="hover:bg-slipGray h-[45px] odd:bg-tableGray even:bg-white"
                     >
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
-                        {localStorage.getItem("username")}
+                        {data.cashierUsername}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
                         {data.slipId.slice(0, 4) + "..."}
