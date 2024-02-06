@@ -350,7 +350,7 @@ const RecallBets = () => {
                         {data.cashierUsername}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
-                        {data.slipId.slice(0, 4) + "..."}
+                        {data._id.slice(0, 4) + "..."}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
                         {data.gameType}
@@ -367,10 +367,14 @@ const RecallBets = () => {
                           data.createdAt.split("T")[1].split(".")[0]}
                       </td>
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
-                        {data.selection
-                          ? data.selection.join(", ")
-                          : data.selection}
+                        {data.Selection?.map((item, index) => (
+                          <span key={index}>
+                            {item}
+                            {index !== data.Selection.length - 1 && ", "}
+                          </span>
+                        ))}
                       </td>
+
                       <td className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap">
                         {data.stake}
                       </td>
