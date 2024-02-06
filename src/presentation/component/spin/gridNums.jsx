@@ -195,7 +195,7 @@ const GridNums = (props) => {
       dispatch(
         addGame({
           gameUuid: localStorage.getItem("spinId"),
-          game: "sixline",
+          game: "corner",
           date: new Date().toLocaleString(),
           value: selectedNumbers.join("/"),
           gameType: "SpinAndWin",
