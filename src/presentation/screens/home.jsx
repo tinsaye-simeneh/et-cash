@@ -271,7 +271,8 @@ const Home = () => {
         Underline: false,
       },
       {
-        LineItem: slip.slipGameType + slip.slipDate + "#" + slip.slipGameId,
+        LineItem:
+          slip.slipGameType + " " + slip.slipDate + "#" + slip.slipGameId,
         FontSize: 8,
         Bold: false,
         Alignment: 0,
