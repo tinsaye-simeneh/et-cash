@@ -131,7 +131,7 @@ const Home = () => {
   };
 
   const maxValueFinder = () => {
-    let maxValue = 10;
+    let maxValue = 0;
     slips.forEach((game) => {
       maxValue = game.amount > maxValue ? game.amount : maxValue;
     });
@@ -779,7 +779,7 @@ const Home = () => {
                         { "bg-greenFull": data.num === 150 }
                       )}
                       onClick={() => {
-                        dispatch(IncreaseValue(maxValueFinder() + data.num));
+                        dispatch(IncreaseValue(data.num));
                       }}
                     >
                       <p className="self-start text-[13px]">Br</p>
