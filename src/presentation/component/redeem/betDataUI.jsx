@@ -190,7 +190,7 @@ const BetDataUI = (props) => {
           handlePrintAndCheckOnlineStatus();
         } else {
           setErrMessage(
-            "Bet cannot be redeemed. please try again later or contact support"
+            "Bet cannot be redeemed. Either the bet has already been redeemed or the game isn't over yet."
           );
         }
       } catch (error) {
@@ -198,6 +198,22 @@ const BetDataUI = (props) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (betData.currentBetData && betData.currentBetData.length > 0) {
+      const status = betData.currentBetData[0].status;
+      if (status === "lost") {
+        setButtonDisabled(true);
+        setErrMessage("This bet has already been Lost");
+      } else if (status === "redeemed") {
+        setButtonDisabled(true);
+        setErrMessage("This bet has already been redeemed");
+      } else if (status === "pending") {
+        setButtonDisabled(true);
+        setErrMessage("The game isn't finished yet. Please try again later.");
+      }
+    }
+  }, [betData.currentBetData]);
 
   return (
     <div className="flex flex-col items-center">
@@ -325,7 +341,15 @@ const BetDataUI = (props) => {
             })}
           </table>
         </div>
+
         <div className="flex flex-row justify-between w-full px-4 pt-2">
+          <span className="text-green-600">
+            Bet winning amount:{"  "}
+            {betData.currentBetData?.reduce(
+              (acc, bet) => acc + bet.betWinnings,
+              0
+            )}
+          </span>
           <button
             className="flex items-center gap-1 px-5 py-2 mt-5 ml-auto text-white rounded-md h-fit bg-redeem"
             onClick={handleRedeemBet}
