@@ -102,7 +102,7 @@ const EventResultSearch = () => {
 
   const slicedArray = data?.slice(-25);
   const filteredAndSortedArray = slicedArray
-    .filter((user) => user.gameId === (gameId === 0 ? user.gameId : gameId))
+    ?.filter((user) => user.gameId === (gameId === 0 ? user.gameId : gameId))
     .sort((a, b) => parseInt(b.gameId) - parseInt(a.gameId));
 
   useEffect(() => {
@@ -402,7 +402,7 @@ const EventResultSearch = () => {
                     </tr>
                   )}
 
-                  {filteredAndSortedArray.map((user, index) => (
+                  {filteredAndSortedArray?.map((user, index) => (
                     <tr
                       key={index}
                       className="hover:bg-slipGray h-[45px] odd:bg-tableGray even:bg-white"
