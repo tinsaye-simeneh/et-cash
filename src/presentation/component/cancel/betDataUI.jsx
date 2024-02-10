@@ -321,6 +321,13 @@ const BetDataUI = (props) => {
           </table>
         </div>
         <div className="flex flex-row justify-between w-full px-4 pt-2">
+          <span className="text-green-600">
+            Bet winning amount:{"  "}
+            {betData.currentBetData?.reduce(
+              (acc, bet) => acc + bet.betWinnings,
+              0
+            )}
+          </span>
           <button
             className="flex items-center gap-1 px-5 py-2 mt-5 ml-auto text-white rounded-md h-fit bg-CancelTop"
             onClick={handleCancelBet}
