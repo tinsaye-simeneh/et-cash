@@ -5,16 +5,19 @@ import Report from "../component/cashierOptions/report";
 import clsx from "clsx";
 import { getReportAction } from "../../stores/reports/getReportAction";
 import { useDispatch } from "react-redux";
+import { FaSpinner } from "react-icons/fa";
 
 const CashierOptions = function (props) {
   const [currentPage, setCurrentPage] = useState("report");
   const dispatch = useDispatch();
   const [userBalance, setUserBalance] = useState(0);
+  const [loading, setLoading] = useState(false); // State for managing loading state
   let username = localStorage.getItem("username");
 
   const getReport = async () => {
-    const currentDate = new Date();
+    setLoading(true); // Set loading to true when starting the refresh process
 
+    const currentDate = new Date();
     // Set startOfDay to the beginning of the current day (00:00:00 UTC+3)
     const startOfDay = new Date(
       currentDate.getFullYear(),
@@ -38,7 +41,6 @@ const CashierOptions = function (props) {
       const response = await dispatch(getReportAction({ body }));
       if (response.payload) {
         const userData = response.payload[username];
-
         const cashierUsername = localStorage.getItem("username");
 
         const filteredData = response.payload.filter(
@@ -49,6 +51,8 @@ const CashierOptions = function (props) {
       }
     } catch (error) {
       alert("Something went wrong");
+    } finally {
+      setLoading(false); // Set loading to false when the refresh process is complete
     }
   };
 
@@ -100,17 +104,25 @@ const CashierOptions = function (props) {
 
         <div className="flex items-center justify-end w-full gap-1 pr-5">
           <h3 className="font-normal text-green-500 text-[1.3rem]">Balance:</h3>
+          {loading ? (
+            <div className="text-green-500 spinner-border" role="status">
+              <FaSpinner className="mr-2 text-green-500 animate-spin" />{" "}
+            </div>
+          ) : (
+            <>
+              <h2 className="font-medium text-green-600 text-[1.4rem]">
+                Br {userBalance.toFixed(2)}
+              </h2>
 
-          <h2 className="font-medium text-green-600 text-[1.4rem]">
-            Br {userBalance.toFixed(2)}
-          </h2>
-
-          <button
-            className="p-1 flex gap-1 h-fit items-center rounded-md border-[1px] border-green-500 px-2"
-            onClick={getReport}
-          >
-            <IoMdRefresh className="fill-green-500" />
-          </button>
+              <button
+                className="p-1 flex gap-1 h-fit items-center rounded-md border-[1px] border-green-500 px-2"
+                onClick={getReport}
+                disabled={loading}
+              >
+                <IoMdRefresh className="fill-green-500" />
+              </button>
+            </>
+          )}
         </div>
 
         <div className="flex flex-col w-full px-5">
