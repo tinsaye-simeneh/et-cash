@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegEye } from "react-icons/fa";
 import { FaPrint } from "react-icons/fa";
 import { FaRegFileExcel } from "react-icons/fa";
@@ -6,6 +6,7 @@ import { IoMdRefresh } from "react-icons/io";
 import { useDispatch } from "react-redux";
 import { getEventAction } from "../../../stores/events/getEventAction";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 const EventResultSearch = () => {
   const initialDateFrom = new Date();
@@ -24,6 +25,8 @@ const EventResultSearch = () => {
   const [gameType, setGameType] = useState("");
   const [data, setData] = useState(null);
   const dispatch = useDispatch();
+  const [slip, setSlip] = useState(null);
+  const [updatedSlipData, setUpdatedSlipData] = useState(null);
 
   const formatDateTime = (date) => {
     const year = date.getFullYear();
@@ -68,6 +71,7 @@ const EventResultSearch = () => {
     setDisabled(false);
     setLoading(false);
     setResult([]);
+    setSlip([]);
   };
 
   const handleExportToExcel = () => {
@@ -96,7 +100,166 @@ const EventResultSearch = () => {
     }
   };
 
-  const slicedArray = data?.slice(0, 15);
+  const slicedArray = data?.slice(-25);
+  const filteredAndSortedArray = slicedArray
+    .filter((user) => user.gameId === (gameId === 0 ? user.gameId : gameId))
+    .sort((a, b) => parseInt(b.gameId) - parseInt(a.gameId));
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const newSlipData = slip;
+      if (newSlipData) {
+        setUpdatedSlipData(newSlipData);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [slip]);
+
+  const generateUpdatedData = () => {
+    return JSON.stringify({
+      printContent: [
+        {
+          LineItem: localStorage.getItem("retailerName"),
+          FontSize: 8,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: localStorage.getItem("username"),
+          FontSize: 8,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "Report Time: " + new Date().toLocaleString() + "UTC + 3",
+          FontSize: 7,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "",
+          FontSize: 7,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "Result Details",
+          FontSize: 7,
+          Bold: false,
+          Alignment: 1,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "",
+          FontSize: 7,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+
+        {
+          LineItem:
+            "From Date: " +
+            updatedSlipData?.startTime.slice(0, 10) +
+            ", " +
+            updatedSlipData?.startTime.slice(11, 16),
+          FontSize: 6,
+          Bold: false,
+          Alignment: 0,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem:
+            "To Date: " +
+            updatedSlipData?.endTime.slice(0, 10) +
+            ", " +
+            updatedSlipData?.endTime.slice(11, 16),
+          FontSize: 6,
+          Bold: false,
+          Alignment: 0,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "",
+          FontSize: 7,
+          Bold: false,
+          Alignment: 2,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "Game Type: " + updatedSlipData?.type,
+          FontSize: 8,
+          Bold: false,
+          Alignment: 1,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "Game ID: " + updatedSlipData?.gameId,
+          FontSize: 8,
+          Bold: false,
+          Alignment: 1,
+          NewLine: true,
+          Underline: false,
+        },
+        {
+          LineItem: "result: " + updatedSlipData?.result,
+          FontSize: 8,
+          Bold: false,
+          Alignment: 1,
+          NewLine: true,
+          Underline: false,
+        },
+      ],
+    });
+  };
+
+  const handlePrint = async () => {
+    if (slip === null || slip === undefined) {
+      alert("There's an error");
+      return;
+    } else {
+      try {
+        const printResponse = await fetch("http://localhost:8084/print", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: generateUpdatedData(
+            localStorage.getItem("slipRef") || "Test Reference"
+          ),
+        });
+        if (printResponse) {
+        } else {
+        }
+      } catch (error) {}
+    }
+  };
+
+  const handlePrintAndCheckOnlineStatus = async () => {
+    try {
+      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      if (onlineResponse.data) {
+        handlePrint();
+      } else {
+        alert("please plug a printer");
+      }
+    } catch (error) {}
+  };
 
   return (
     <div
@@ -238,7 +401,8 @@ const EventResultSearch = () => {
                       </td>
                     </tr>
                   )}
-                  {slicedArray?.map((user, index) => (
+
+                  {filteredAndSortedArray.map((user, index) => (
                     <tr
                       key={index}
                       className="hover:bg-slipGray h-[45px] odd:bg-tableGray even:bg-white"
@@ -272,7 +436,13 @@ const EventResultSearch = () => {
                         </button>
                       </td>
                       <td className="border-s-[1px] pl-11 border-gray-500 whitespace-nowrap">
-                        <button className="w-[60px] rounded-md h-[40px] border-[1px] border-green-500 bg-white">
+                        <button
+                          className="w-[60px] rounded-md h-[40px] border-[1px] border-green-500 bg-white"
+                          onClick={() => {
+                            setSlip(user);
+                            handlePrintAndCheckOnlineStatus();
+                          }}
+                        >
                           <FaPrint className="w-full fill-green-500" />
                         </button>
                       </td>
