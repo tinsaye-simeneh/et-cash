@@ -27,6 +27,7 @@ const EventResultSearch = () => {
   const dispatch = useDispatch();
   const [slip, setSlip] = useState(null);
   const [updatedSlipData, setUpdatedSlipData] = useState(null);
+  const [showResult, setShowResult] = useState(false);
 
   const formatDateTime = (date) => {
     const year = date.getFullYear();
@@ -265,7 +266,7 @@ const EventResultSearch = () => {
     <div
       className="w-full p-4 border-green-500 border-[1px]"
       style={{
-        paddingBottom: "2rem",
+        paddingBottom: "3rem",
       }}
     >
       <div className="flex flex-col gap-5 w-full p-2 border-grey-700 border-[1px]">
@@ -427,6 +428,7 @@ const EventResultSearch = () => {
                         <button
                           className="w-[60px] rounded-md h-[40px] border-[1px] border-green-500 bg-white"
                           onClick={() => {
+                            setShowResult(true);
                             setResult(user.result);
                             setGameType(user.type);
                             setGameId(user.gameId);
@@ -453,26 +455,32 @@ const EventResultSearch = () => {
             </div>
           }
         </div>
-        {result?.length > 0 && (
-          <div className="flex flex-col w-full">
-            <div className="flex items-center mb-2">
-              <span className="font-bold text-green-600">Result:</span>
-              <span className="ml-2">{gameType}</span>
-              <span className="ml-2">(game Number: {gameId})</span>
-            </div>
-            <div className="flex gap-2">
-              {result?.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 p-2 bg-gray-200 rounded-md"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+      {result?.length > 0 && showResult && (
+        <div className="flex flex-col w-full">
+          <div className="flex items-center mb-2">
+            <span className="font-bold text-green-600">Result:</span>
+            <span className="ml-2">{gameType}</span>
+            <span className="ml-2">(game Number: {gameId})</span>
+            <button
+              className="p-1 px-5 mt-2 ml-6 text-white bg-black bg-green-500 rounded-md"
+              onClick={() => setShowResult(false)}
+            >
+              close
+            </button>
+          </div>
+          <div className="flex gap-2">
+            {result?.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 p-2 bg-gray-200 rounded-md"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
