@@ -44,10 +44,16 @@ const RecallBets = () => {
     return ret;
   };
 
+  const mappedSelections = slip?.Selection?.map((item, index) => {
+    return item;
+  });
+
+  const selectionsString = mappedSelections?.join(", ");
+
   let jsonData = JSON.stringify({
     printContent: [
       {
-        LineItem: slip?.slipReference + "Copy Ticket",
+        LineItem: slip?.slipReference,
         FontSize: 8,
         Bold: false,
         Alignment: 2,
@@ -75,6 +81,22 @@ const RecallBets = () => {
         FontSize: 7,
         Bold: false,
         Alignment: 2,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Copy Ticket",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 1,
         NewLine: true,
         Underline: false,
       },
@@ -117,7 +139,7 @@ const RecallBets = () => {
         Underline: false,
       },
       {
-        LineItem: slip?.selection.join(", ") || "Selection",
+        LineItem: selectionsString || "Selection",
         FontSize: 8,
         Bold: false,
         Alignment: 0,
@@ -197,7 +219,7 @@ const RecallBets = () => {
         Underline: false,
       },
       {
-        LineItem: slip?.Reference || "reference",
+        LineItem: slip?.slipReference || "reference",
         FontSize: 8,
         Bold: false,
         Alignment: 1,
