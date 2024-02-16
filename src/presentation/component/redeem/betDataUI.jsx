@@ -12,30 +12,68 @@ const BetDataUI = (props) => {
 
   const dispatch = useDispatch();
 
-  const mappedData = betData.currentBetData?.map((bet) => {
-    return {
-      gameType: bet.gameType,
-      betType: bet.betType,
-      selection: bet.selection.map((element) => element).join(","),
-      odds: bet.odds,
-      stake: bet.stake,
-      createdAt: bet.createdAt,
-      betWinnings: bet.odds * bet.stake,
-    };
-  });
+  const mappedData = betData.currentBetData
+    ?.filter((bet) => bet.status === "won - awaiting redemption")
+    .map((bet) => {
+      return {
+        gameType: bet.gameType,
+        betType: bet.betType,
+        selection: bet.selection.map((element) => element).join(","),
+        odds: bet.odds,
+        stake: bet.stake,
+        createdAt: bet.createdAt,
+        betWinnings: bet.odds * bet.stake,
+      };
+    });
+
+  const totalWin = mappedData.reduce((accumulator, currentBet) => {
+    return accumulator + currentBet.betWinnings;
+  }, 0);
 
   const formattedSlips = () =>
     mappedData.flatMap((slip) => [
       {
-        LineItem: slip.betType,
+        LineItem: "Redeemed Amount : " + totalWin + " Br",
         FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: "Winning Bets",
+        FontSize: 8,
+        Bold: false,
+        Alignment: 1,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: null,
+        FontSize: 8,
+        Bold: false,
+        Alignment: 0,
+        NewLine: true,
+        Underline: false,
+      },
+      {
+        LineItem: slip.betType,
+        FontSize: 7,
         Bold: true,
         Alignment: 0,
         NewLine: true,
         Underline: false,
       },
       {
-        LineItem: "stake: " + slip.stake + ", Win: " + slip.betWinnings,
+        LineItem: "Br " + slip.stake,
         FontSize: 7,
         Bold: true,
         Alignment: 2,
@@ -101,8 +139,8 @@ const BetDataUI = (props) => {
       },
       {
         LineItem:
-          "Cancel Time: " + new Date().toLocaleString() + " " + "UTC + 3",
-        FontSize: 7,
+          "Redeem Time: " + new Date().toLocaleString() + " " + "UTC + 3",
+        FontSize: 6,
         Bold: false,
         Alignment: 2,
         NewLine: true,
@@ -117,8 +155,8 @@ const BetDataUI = (props) => {
         Underline: false,
       },
       {
-        LineItem: "Redeem Ticket",
-        FontSize: 10,
+        LineItem: "Redeem Receipt",
+        FontSize: 9,
         Bold: false,
         Alignment: 1,
         NewLine: true,
@@ -134,21 +172,13 @@ const BetDataUI = (props) => {
       },
       ...formattedSlips(),
       {
-        LineItem: null,
-        FontSize: 8,
-        Bold: false,
-        Alignment: 0,
-        NewLine: true,
-        Underline: false,
-      },
-      {
         LineItem: betData.input,
         FontSize: 8,
         Bold: false,
         Alignment: 1,
         NewLine: false,
         Underline: false,
-        isBarcode: true,
+        isBarcode: false,
       },
     ],
   });
@@ -201,16 +231,26 @@ const BetDataUI = (props) => {
 
   useEffect(() => {
     if (betData.currentBetData && betData.currentBetData.length > 0) {
-      const status = betData.currentBetData[0].status;
-      if (status === "lost") {
+      let allLost = true;
+      betData.currentBetData.forEach((bet) => {
+        const status = bet.status;
+        if (status !== "lost") {
+          allLost = false;
+          if (status === "redeemed") {
+            setButtonDisabled(true);
+            setErrMessage("This bet has already been redeemed");
+          } else if (status === "pending") {
+            setButtonDisabled(true);
+            setErrMessage(
+              "The game isn't finished yet. Please try again later."
+            );
+          }
+        }
+      });
+
+      if (allLost) {
         setButtonDisabled(true);
-        setErrMessage("This bet has already been Lost");
-      } else if (status === "redeemed") {
-        setButtonDisabled(true);
-        setErrMessage("This bet has already been redeemed");
-      } else if (status === "pending") {
-        setButtonDisabled(true);
-        setErrMessage("The game isn't finished yet. Please try again later.");
+        setErrMessage("All bets have already been Lost");
       }
     }
   }, [betData.currentBetData]);
@@ -348,7 +388,8 @@ const BetDataUI = (props) => {
             {betData.currentBetData?.reduce(
               (acc, bet) => acc + bet.betWinnings,
               0
-            )}
+            )}{" "}
+            Br
           </span>
           <button
             className="flex items-center gap-1 px-5 py-2 mt-5 ml-auto text-white rounded-md h-fit bg-redeem"
