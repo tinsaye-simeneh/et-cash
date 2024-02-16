@@ -34,7 +34,7 @@ const BetDataUI = (props) => {
         Underline: false,
       },
       {
-        LineItem: "stake: " + slip.stake + ", Win: " + slip.betWinnings,
+        LineItem: slip.stake + " Br",
         FontSize: 7,
         Bold: true,
         Alignment: 2,
@@ -116,7 +116,7 @@ const BetDataUI = (props) => {
         Underline: false,
       },
       {
-        LineItem: "Cancel Ticket",
+        LineItem: "Cancel Receipt",
         FontSize: 10,
         Bold: false,
         Alignment: 1,
@@ -147,7 +147,7 @@ const BetDataUI = (props) => {
         Alignment: 1,
         NewLine: false,
         Underline: false,
-        isBarcode: true,
+        isBarcode: false,
       },
     ],
   });
