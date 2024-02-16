@@ -27,7 +27,7 @@ const BetDataUI = (props) => {
     mappedData.flatMap((slip) => [
       {
         LineItem: slip.betType,
-        FontSize: 8,
+        FontSize: 7,
         Bold: true,
         Alignment: 0,
         NewLine: true,
@@ -117,7 +117,7 @@ const BetDataUI = (props) => {
       },
       {
         LineItem: "Cancel Receipt",
-        FontSize: 10,
+        FontSize: 9,
         Bold: false,
         Alignment: 1,
         NewLine: true,
