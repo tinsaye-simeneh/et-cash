@@ -61,10 +61,15 @@ const Summary = () => {
           (item) => item.cashierUsername === cashierUsername
         );
 
-        setData(filteredData[0]);
+        if (filteredData.length > 0) {
+          setData(filteredData[0]);
+        } else {
+          setLoading(false);
+          setData(null);
+        }
       }
     } catch (error) {
-      alert("Something went wrong");
+      setData(null);
     }
   };
 
@@ -452,22 +457,22 @@ const Summary = () => {
                     </td>
 
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.bets}
+                      {data.bets ? data.bets : 0}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.betWinnings}
+                      {data.betWinnings ? data.betWinnings : 0}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.cancellations}
+                      {data.cancellations ? data.cancellations : 0}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.redeemed}
+                      {data.redeemed ? data.redeemed : 0}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.unclaimed}
+                      {data.unclaimed ? data.unclaimed : 0}
                     </td>
                     <td className="border-s-[1px] border-gray-500 pl-2 whitespace-nowrap">
-                      {data.net}
+                      {data.net ? data.net : 0}
                     </td>
                   </tr>
                 )}
