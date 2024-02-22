@@ -135,6 +135,7 @@ const GridNums = (props) => {
 
     setCircleMark(config[s]());
   };
+
   const handleClickCircle = (s, num) => {
     const config = {
       1: () =>
@@ -191,11 +192,63 @@ const GridNums = (props) => {
           id: `${s}-${num}`,
         })
       );
-    } else if ([1, 3, 6, 8].includes(s)) {
+    } else if (
+      (s === 1 &&
+        (num === 3 ||
+          num === 6 ||
+          num === 9 ||
+          num === 12 ||
+          num === 15 ||
+          num === 18 ||
+          num === 21 ||
+          num === 24 ||
+          num === 27 ||
+          num === 30 ||
+          num === 33 ||
+          num === 36)) ||
+      (s === 3 &&
+        (num === 3 ||
+          num === 6 ||
+          num === 9 ||
+          num === 12 ||
+          num === 15 ||
+          num === 18 ||
+          num === 21 ||
+          num === 24 ||
+          num === 27 ||
+          num === 30 ||
+          num === 33 ||
+          num === 36)) ||
+      (s === 6 &&
+        (num === 1 ||
+          num === 4 ||
+          num === 7 ||
+          num === 10 ||
+          num === 13 ||
+          num === 16 ||
+          num === 19 ||
+          num === 22 ||
+          num === 25 ||
+          num === 28 ||
+          num === 31 ||
+          num === 34)) ||
+      (s === 8 && num === 1) ||
+      num === 4 ||
+      num === 7 ||
+      num === 10 ||
+      num === 13 ||
+      num === 16 ||
+      num === 19 ||
+      num === 22 ||
+      num === 25 ||
+      num === 28 ||
+      num === 31 ||
+      num === 34
+    ) {
       dispatch(
         addGame({
           gameUuid: localStorage.getItem("spinId"),
-          game: "corner",
+          game: "sixline",
           date: new Date().toLocaleString(),
           value: selectedNumbers.join("/"),
           gameType: "SpinAndWin",
@@ -209,7 +262,7 @@ const GridNums = (props) => {
       dispatch(
         addGame({
           gameUuid: localStorage.getItem("spinId"),
-          game: "split",
+          game: "corner",
           date: new Date().toLocaleString(),
           gameType: "SpinAndWin",
           value: selectedNumbers.join("/"),
