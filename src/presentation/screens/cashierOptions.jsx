@@ -50,9 +50,9 @@ const CashierOptions = function (props) {
         setUserBalance(filteredData[0].net);
       }
     } catch (error) {
-      alert("Something went wrong");
+      setUserBalance(0);
     } finally {
-      setLoading(false); // Set loading to false when the refresh process is complete
+      setLoading(false);
     }
   };
 
