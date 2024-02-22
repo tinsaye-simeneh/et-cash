@@ -12,9 +12,14 @@ const BetDataUI = (props) => {
 
   const dispatch = useDispatch();
 
+  let totalBetWinnings = 0;
+
   const mappedData = betData.currentBetData
     ?.filter((bet) => bet.status === "won - awaiting redemption")
     .map((bet) => {
+      const betWinnings = bet.odds * bet.stake;
+      totalBetWinnings += betWinnings;
+
       return {
         gameType: bet.gameType,
         betType: bet.betType,
@@ -22,18 +27,14 @@ const BetDataUI = (props) => {
         odds: bet.odds,
         stake: bet.stake,
         createdAt: bet.createdAt,
-        betWinnings: bet.odds * bet.stake,
+        betWinnings: betWinnings,
       };
     });
-
-  const totalWin = mappedData.reduce((accumulator, currentBet) => {
-    return accumulator + currentBet.betWinnings;
-  }, 0);
 
   const formattedSlips = () =>
     mappedData.flatMap((slip) => [
       {
-        LineItem: "Redeemed Amount : " + totalWin + " Br",
+        LineItem: "Redeemed Amount : " + totalBetWinnings + " Br",
         FontSize: 8,
         Bold: false,
         Alignment: 0,
