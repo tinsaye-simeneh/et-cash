@@ -49,6 +49,15 @@ const Home = () => {
     dispatch(changeValue(valueObject));
   };
 
+  const handlePlusMinus = (value) => {
+    setStakeValue((prevStakeValue) => {
+      if (prevStakeValue === 0 && value < 0) {
+        return 0; // Prevent decreasing below 0
+      }
+      return prevStakeValue + value;
+    });
+  };
+
   useEffect(() => {
     if (
       localStorage.getItem("token") === null ||
@@ -763,10 +772,7 @@ const Home = () => {
               <div className="flex items-center h-[23px]">
                 <div
                   onClick={() => {
-                    handleClickForPlusMinus({
-                      date: stakeValue,
-                      value: 10,
-                    });
+                    handlePlusMinus(10);
                   }}
                   className="bg-plusMinusGray cursor-pointer rounded-l-sm h-full w-[30px] relative"
                 >
@@ -786,10 +792,7 @@ const Home = () => {
 
                 <div
                   onClick={() => {
-                    handleClickForPlusMinus({
-                      date: stakeValue,
-                      value: -10,
-                    });
+                    handlePlusMinus(-10);
                   }}
                   className=" cursor-pointer bg-plusMinusGray rounded-r-sm h-full w-[30px] relative"
                 >
