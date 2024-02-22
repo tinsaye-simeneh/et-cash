@@ -37,6 +37,7 @@ const Home = () => {
   const [betInvalid, setBetInvalid] = useState(false);
   const [isPlaceBetDisabled, setIsPlaceBetDisabled] = useState(false);
   const [currentTab, setCurrentTab] = useState("");
+  const [stakeValue, setStakeValue] = useState(0);
 
   const slipsContainerRef = useRef(null);
 
@@ -759,6 +760,52 @@ const Home = () => {
                 })}
               </div>
 
+              <div className="flex items-center h-[23px]">
+                <div
+                  onClick={() => {
+                    handleClickForPlusMinus({
+                      date: stakeValue,
+                      value: 10,
+                    });
+                  }}
+                  className="bg-plusMinusGray cursor-pointer rounded-l-sm h-full w-[30px] relative"
+                >
+                  <div className="absolute w-1/4 -translate-x-1/2 -translate-y-1/2 bg-white left-1/2 top-1/2 h-3/4"></div>
+                  <div className="absolute w-3/4 -translate-x-1/2 -translate-y-1/2 bg-white left-1/2 top-1/2 h-1/4"></div>
+                </div>
+
+                <input
+                  type="number"
+                  className="w-full h-full px-2 text-gray-600 border-0 outline-0"
+                  placeholder="Custom"
+                  onChange={(e) => {
+                    setStakeValue(parseInt(e.target.value, 10));
+                  }}
+                  value={stakeValue}
+                />
+
+                <div
+                  onClick={() => {
+                    handleClickForPlusMinus({
+                      date: stakeValue,
+                      value: -10,
+                    });
+                  }}
+                  className=" cursor-pointer bg-plusMinusGray rounded-r-sm h-full w-[30px] relative"
+                >
+                  <div className="absolute w-3/4 -translate-x-1/2 -translate-y-1/2 bg-white left-1/2 top-1/2 h-1/4"></div>
+                </div>
+
+                <button
+                  className="px-3 py-1 ml-3 text-white rounded bg-blueFull hover:bg-blue-700"
+                  onClick={() => {
+                    dispatch(IncreaseValue(stakeValue));
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+
               <div className="flex w-full gap-2">
                 {[
                   { color: "red", num: 10 },
@@ -768,23 +815,25 @@ const Home = () => {
                   { color: "green", num: 150 },
                 ].map((data) => {
                   return (
-                    <div
-                      key={data.num}
-                      className={clsx(
-                        `w-[60px] -space-y-2 px-1 cursor-pointer flex flex-col justify-center text-white h-[40px] items-center rounded-[3px] mt-2 ml-1`,
-                        { "bg-brown": data.num === 10 },
-                        { "bg-pinkFull": data.num === 20 },
-                        { "bg-purpleFull": data.num === 50 },
-                        { "bg-blueFull": data.num === 100 },
-                        { "bg-greenFull": data.num === 150 }
-                      )}
-                      onClick={() => {
-                        dispatch(IncreaseValue(data.num));
-                      }}
-                    >
-                      <p className="self-start text-[13px]">Br</p>
-                      <p className="self-center text-[20px]">{data.num}</p>
-                    </div>
+                    <>
+                      <div
+                        key={data.num}
+                        className={clsx(
+                          `w-[60px] -space-y-2 px-1 cursor-pointer flex flex-col justify-center text-white h-[40px] items-center rounded-[3px] mt-2 ml-1`,
+                          { "bg-brown": data.num === 10 },
+                          { "bg-pinkFull": data.num === 20 },
+                          { "bg-purpleFull": data.num === 50 },
+                          { "bg-blueFull": data.num === 100 },
+                          { "bg-greenFull": data.num === 150 }
+                        )}
+                        onClick={() => {
+                          dispatch(IncreaseValue(data.num));
+                        }}
+                      >
+                        <p className="self-start text-[13px]">Br</p>
+                        <p className="self-center text-[20px]">{data.num}</p>
+                      </div>
+                    </>
                   );
                 })}
               </div>
