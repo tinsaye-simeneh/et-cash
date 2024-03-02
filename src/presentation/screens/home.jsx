@@ -542,6 +542,12 @@ const Home = () => {
             Redeem
             <BiDollar className="fill-white" />
           </button>
+          <a
+            href="https://dytech-services.com/PrinterI.application"
+            className="p-2 ml-3 text-white rounded-md bg-addToSlip"
+          >
+            Download printer app
+          </a>
         </div>
 
         <div className="flex flex-col items-end">
@@ -634,6 +640,7 @@ const Home = () => {
               )}
             </Link>
           </div>
+
           <Outlet />
         </div>
 
