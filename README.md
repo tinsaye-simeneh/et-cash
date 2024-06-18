@@ -1,1 +1,1 @@
-# virtual cashier
+# virtual game cashier
