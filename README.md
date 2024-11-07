@@ -27,6 +27,7 @@
 - **Frontend**: React.js
 - **Styling**: Tailwind CSS
 - **API Calls**: Axios
+- **React Toastify**: for notification
 
 ## Getting Started
 
