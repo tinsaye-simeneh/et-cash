@@ -1,6 +1,6 @@
 # Virtual Game Cashier
 
-**Virtual Game Cashier** is a retail cashier interface designed for virtual games like **Spin** and **Keno**. This project aims to provide a seamless user experience for cashiers handling virtual game transactions. Built with **React.js** for a fast and responsive UI and styled with **Tailwind CSS** for efficient and flexible design. The application also uses **Axios** for smooth, reliable API communication.
+**Virtual Game Cashier** is a retail cashier interface designed for virtual games like **Spin** and **Keno**. This project aims to provide a seamless user experience for cashiers handling virtual game transactions. Built with **React.js** for a fast and responsive UI and styled with **Tailwind CSS** for efficient and flexible design. The application also uses **Axios** for smooth, reliable API communication. Also used many other packages for some services, check it out here: [Tech Stack](#tech-stack)
 
 ## Table of Contents
 
@@ -28,6 +28,12 @@
 - **Styling**: Tailwind CSS
 - **API Calls**: Axios
 - **React Toastify**: for notification
+- **react-barcode**: for barcode generation
+- **react-icons**: for icon components
+- **react-redux**: for state management
+- **react-to-print**: printing service
+- **clsx**: excel file export
+- **react-router-dom**: for routing
 
 ## Getting Started
 
