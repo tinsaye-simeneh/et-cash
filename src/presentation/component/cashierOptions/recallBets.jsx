@@ -1,30 +1,97 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdRefresh } from "react-icons/io";
 import { FaPrint } from "react-icons/fa";
 import { getBetsAction } from "../../../stores/bet/getBetsAction";
 import { useDispatch } from "react-redux";
 import { FaSpinner } from "react-icons/fa";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const RecallBets = () => {
   const [data, setData] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [slip, setSlip] = useState(null);
+  const [printerOnline, setPrinterOnline] = useState("");
+  const [printerLink, setPrinterLink] = useState("");
 
+  const { userAgent } = navigator;
+  let os = "";
+
+  useEffect(() => {
+    if (userAgent.indexOf("Win") !== -1) {
+      if (userAgent.indexOf("Windows NT 10.0") !== -1) os += "10";
+      if (userAgent.indexOf("Windows NT 6.2") !== -1) os += "8";
+      if (userAgent.indexOf("Windows NT 6.1") !== -1) os += "7";
+      if (userAgent.indexOf("Windows NT 6.0") !== -1) os += "Vista";
+      if (userAgent.indexOf("Windows NT 5.1") !== -1) os += "XP";
+    } else if (userAgent.indexOf("Mac") !== -1) {
+      os = "MacOS";
+    } else if (userAgent.indexOf("X11") !== -1) {
+      os = "UNIX";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      os = "Linux";
+    }
+
+    if (os === "10") {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    } else if (os === "7") {
+      setPrinterOnline("http://localhost:8084/isonline");
+      setPrinterLink("http://localhost:8084/print");
+    } else {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    }
+  }, [
+    userAgent,
+    setPrinterOnline,
+    setPrinterLink,
+    os,
+    setPrinterOnline,
+    setPrinterLink,
+  ]);
   const dispatch = useDispatch();
 
   const handleRefresh = async () => {
     setLoading(true);
+    setData(null);
     try {
       const response = await dispatch(getBetsAction());
 
       if (response.payload) {
-        setDisabled(true);
+        // setDisabled(true);
         setData(response.payload);
       }
     } catch (err) {
-      alert("Something went wrong");
+      Notification({
+        message: "An error occured, please try again",
+        type: "error",
+      });
     }
   };
 
@@ -232,7 +299,7 @@ const RecallBets = () => {
 
   const handlePrint = async () => {
     try {
-      const printResponse = await fetch("http://localhost:8084/print", {
+      const printResponse = await fetch(printerLink, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -247,11 +314,14 @@ const RecallBets = () => {
 
   const handlePrintAndCheckOnlineStatus = async () => {
     try {
-      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      const onlineResponse = await axios.post(printerOnline);
       if (onlineResponse.data) {
         handlePrint();
       } else {
-        alert("please plug a printer");
+        Notification({
+          message: "Printer is offline",
+          type: "error",
+        });
       }
     } catch (error) {}
   };
@@ -347,6 +417,9 @@ const RecallBets = () => {
                         <td
                           colSpan={8}
                           className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap text-center py-5"
+                          style={{
+                            fontSize: "1.3rem",
+                          }}
                         >
                           No data found
                         </td>
@@ -355,7 +428,12 @@ const RecallBets = () => {
                   {loading && data === null && (
                     <tr>
                       <td colSpan={8} className="py-5 text-center">
-                        <div className="flex items-center justify-center">
+                        <div
+                          className="flex items-center justify-center"
+                          style={{
+                            fontSize: "1.5rem",
+                          }}
+                        >
                           <FaSpinner className="mr-2 text-green-500 animate-spin" />{" "}
                           Loading...
                         </div>

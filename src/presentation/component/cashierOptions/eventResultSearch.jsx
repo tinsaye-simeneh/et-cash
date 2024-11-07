@@ -7,6 +7,31 @@ import { useDispatch } from "react-redux";
 import { getEventAction } from "../../../stores/events/getEventAction";
 import { FaSpinner } from "react-icons/fa";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const EventResultSearch = () => {
   const initialDateFrom = new Date();
@@ -28,6 +53,45 @@ const EventResultSearch = () => {
   const [slip, setSlip] = useState(null);
   const [updatedSlipData, setUpdatedSlipData] = useState(null);
   const [showResult, setShowResult] = useState(false);
+  const [printerOnline, setPrinterOnline] = useState("");
+  const [printerLink, setPrinterLink] = useState("");
+
+  const { userAgent } = navigator;
+  let os = "";
+
+  useEffect(() => {
+    if (userAgent.indexOf("Win") !== -1) {
+      if (userAgent.indexOf("Windows NT 10.0") !== -1) os += "10";
+      if (userAgent.indexOf("Windows NT 6.2") !== -1) os += "8";
+      if (userAgent.indexOf("Windows NT 6.1") !== -1) os += "7";
+      if (userAgent.indexOf("Windows NT 6.0") !== -1) os += "Vista";
+      if (userAgent.indexOf("Windows NT 5.1") !== -1) os += "XP";
+    } else if (userAgent.indexOf("Mac") !== -1) {
+      os = "MacOS";
+    } else if (userAgent.indexOf("X11") !== -1) {
+      os = "UNIX";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      os = "Linux";
+    }
+
+    if (os === "10") {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    } else if (os === "7") {
+      setPrinterOnline("http://localhost:8084/isonline");
+      setPrinterLink("http://localhost:8084/print");
+    } else {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    }
+  }, [
+    userAgent,
+    setPrinterOnline,
+    setPrinterLink,
+    os,
+    setPrinterOnline,
+    setPrinterLink,
+  ]);
 
   const formatDateTime = (date) => {
     const year = date.getFullYear();
@@ -51,6 +115,7 @@ const EventResultSearch = () => {
 
   const handleRefresh = async () => {
     setLoading(true);
+    setData(null);
     const body = {
       startTime: formatDateTime(selectedDateFrom),
       endTime: formatDateTime(selectedDateTo),
@@ -59,11 +124,14 @@ const EventResultSearch = () => {
     try {
       const response = await dispatch(getEventAction({ body }));
       if (response.payload) {
-        setDisabled(true);
+        // setDisabled(true);
         setData(response.payload);
       }
     } catch (error) {
-      alert("Something went wrong");
+      Notification({
+        message: "An error occurred, please try again later",
+        type: "error",
+      });
     }
   };
 
@@ -76,7 +144,11 @@ const EventResultSearch = () => {
   };
 
   const handleExportToExcel = () => {
-    if (data === null) return alert("No data to export");
+    if (data === null)
+      return Notification({
+        message: "No data found",
+        type: "error",
+      });
     else {
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Game ID,From Date,To Date,Game Type\n";
@@ -231,11 +303,14 @@ const EventResultSearch = () => {
 
   const handlePrint = async () => {
     if (slip === null || slip === undefined) {
-      alert("There's an error");
+      Notification({
+        message: "An error occurred, please try again later",
+        type: "error",
+      });
       return;
     } else {
       try {
-        const printResponse = await fetch("http://localhost:8084/print", {
+        const printResponse = await fetch(printerLink, {
           method: "post",
           headers: {
             "Content-Type": "application/json",
@@ -253,11 +328,14 @@ const EventResultSearch = () => {
 
   const handlePrintAndCheckOnlineStatus = async () => {
     try {
-      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      const onlineResponse = await axios.post(printerOnline);
       if (onlineResponse.data) {
         handlePrint();
       } else {
-        alert("please plug a printer");
+        Notification({
+          message: "Printer is offline",
+          type: "error",
+        });
       }
     } catch (error) {}
   };
@@ -387,6 +465,9 @@ const EventResultSearch = () => {
                         <td
                           colSpan={10}
                           className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap text-center py-5"
+                          style={{
+                            fontSize: "1.3rem",
+                          }}
                         >
                           No data found
                         </td>
@@ -395,7 +476,12 @@ const EventResultSearch = () => {
                   {loading && data === null && (
                     <tr>
                       <td colSpan={10} className="py-5 text-center">
-                        <div className="flex items-center justify-center">
+                        <div
+                          className="flex items-center justify-center"
+                          style={{
+                            fontSize: "1.5rem",
+                          }}
+                        >
                           <FaSpinner className="mr-2 text-green-500 animate-spin" />{" "}
                           Loading...
                         </div>

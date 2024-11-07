@@ -5,6 +5,31 @@ import { useDispatch } from "react-redux";
 import { getBetAction } from "../../stores/bet/getBetAction";
 import BetDataUI from "../component/cancel/betDataUI";
 import { FaSpinner } from "react-icons/fa";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const Cancel = (props) => {
   const [input, setInput] = useState("");
@@ -33,7 +58,10 @@ const Cancel = (props) => {
 
   const handleBetData = async () => {
     if (input.length === 0) {
-      alert("Please enter betslip code");
+      Notification({
+        message: "Please enter a valid betslip code",
+        type: "error",
+      });
     } else {
       try {
         setLoading(true); // Start loading

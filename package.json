@@ -18,6 +18,7 @@
     "react-scripts": "5.0.1",
     "react-spring": "^9.7.3",
     "react-to-print": "^2.14.15",
+    "react-toastify": "^10.0.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

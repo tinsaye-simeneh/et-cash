@@ -28,6 +28,31 @@ import Cancel from "./cancel";
 import Redeem from "./redeem";
 import DateTimeCounter from "../component/home/dateTimeCounter";
 import { placeAction } from "../../stores/bet/placeAction";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const Home = () => {
   const location = useLocation();
@@ -38,6 +63,10 @@ const Home = () => {
   const [isPlaceBetDisabled, setIsPlaceBetDisabled] = useState(false);
   const [currentTab, setCurrentTab] = useState("");
   const [stakeValue, setStakeValue] = useState(0);
+  const [printerOnline, setPrinterOnline] = useState("");
+  const [printerLink, setPrinterLink] = useState("");
+  const { userAgent } = navigator;
+  let os = "";
 
   const slipsContainerRef = useRef(null);
 
@@ -59,6 +88,40 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (userAgent.indexOf("Win") !== -1) {
+      if (userAgent.indexOf("Windows NT 10.0") !== -1) os += "10";
+      if (userAgent.indexOf("Windows NT 6.2") !== -1) os += "8";
+      if (userAgent.indexOf("Windows NT 6.1") !== -1) os += "7";
+      if (userAgent.indexOf("Windows NT 6.0") !== -1) os += "Vista";
+      if (userAgent.indexOf("Windows NT 5.1") !== -1) os += "XP";
+    } else if (userAgent.indexOf("Mac") !== -1) {
+      os = "MacOS";
+    } else if (userAgent.indexOf("X11") !== -1) {
+      os = "UNIX";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      os = "Linux";
+    }
+
+    if (os === "7") {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    } else if (os === "10") {
+      setPrinterOnline("http://localhost:8084/isonline");
+      setPrinterLink("http://localhost:8084/print");
+    } else {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    }
+  }, [
+    userAgent,
+    setPrinterOnline,
+    setPrinterLink,
+    os,
+    setPrinterOnline,
+    setPrinterLink,
+  ]);
+
+  useEffect(() => {
     if (
       localStorage.getItem("token") === null ||
       localStorage.getItem("token") === undefined
@@ -69,7 +132,10 @@ const Home = () => {
       localStorage.getItem("retailerName") === null ||
       localStorage.getItem("retailerName") === undefined
     ) {
-      alert("The User is not assigned to any retailer");
+      Notification({
+        message: "The user is not assigned to a retailer",
+        type: "error",
+      });
       window.location.href = "/login";
     } else {
       const interval = 30 * 60 * 1000;
@@ -453,11 +519,14 @@ const Home = () => {
       localStorage.getItem("slipRef") === null ||
       localStorage.getItem("slipRef") === undefined
     ) {
-      alert("There's an error");
+      Notification({
+        message: "Printing error, retry again",
+        type: "error",
+      });
       return;
     } else {
       try {
-        const printResponse = await fetch("http://localhost:8084/print", {
+        const printResponse = await fetch(printerLink, {
           method: "post",
           headers: {
             "Content-Type": "application/json",
@@ -475,11 +544,14 @@ const Home = () => {
 
   const handlePrintAndCheckOnlineStatus = async () => {
     try {
-      const onlineResponse = await axios.post("http://localhost:8084/isonline");
-      if (onlineResponse.data) {
+      const onlineResponse = await axios.post(printerOnline);
+      if (onlineResponse) {
         handlePrint();
       } else {
-        alert("please plug a printer");
+        Notification({
+          message: "Printer is offline, Please check the printer",
+          type: "error",
+        });
       }
     } catch (error) {}
   };
@@ -490,12 +562,18 @@ const Home = () => {
       localStorage.getItem("token") === null ||
       localStorage.getItem("token") === undefined
     ) {
-      alert("Your session is expired, Please login first");
+      Notification({
+        message: "Session Expired, Please Login Again",
+        type: "error",
+      });
       window.location.href = "/login";
       setIsPlaceBetDisabled(false);
       return;
     } else if (slips.length === 0) {
-      alert("Please add games first");
+      Notification({
+        message: "Please add games to the slip",
+        type: "error",
+      });
       setIsPlaceBetDisabled(false);
       return;
     } else {
@@ -542,12 +620,24 @@ const Home = () => {
             Redeem
             <BiDollar className="fill-white" />
           </button>
-          <a
-            href="https://dytech-services.com/PrinterI.application"
-            className="p-2 ml-3 text-white rounded-md bg-addToSlip"
+          <select
+            className="text-white bg-transparent rounded-md bg-addToSlip"
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              if (selectedValue !== "Download") {
+                window.open(selectedValue, "_blank");
+                e.target.selectedIndex = 0;
+              }
+            }}
           >
-            Download printer app
-          </a>
+            <option>Download</option>
+            <option value="https://dytech-services.com/PrinterI.application">
+              printer app
+            </option>
+            <option value="https://dytech-services.com/ScreenDiv/ScreenDiv.application">
+              Game app
+            </option>
+          </select>
         </div>
 
         <div className="flex flex-col items-end">

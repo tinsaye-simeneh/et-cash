@@ -10,6 +10,7 @@ import { removeNumber, quickPick } from "../../stores/keno/kenoSlice";
 import clsx from "clsx";
 import { getKenoData } from "../../stores/keno/kenoAction";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 const KenoScreen = function () {
   const numbers = useSelector((state) => state.keno.value);
@@ -21,9 +22,11 @@ const KenoScreen = function () {
   const [time, setTime] = useState(0);
   const [hideRefresh, setHideRefresh] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [odd, setOdd] = useState(null);
 
   useEffect(() => {
     // Fetch Keno data
+    currentRetailer();
     dispatch(getKenoData()).then((res) => {
       setData(res.payload);
     });
@@ -45,6 +48,28 @@ const KenoScreen = function () {
       return () => clearInterval(removeTokenInterval);
     }
   }, [dispatch, setData]);
+
+  const currentRetailer = async () => {
+    try {
+      const response = await axios.get(
+        "https://api.games.dytech-services.com/v1/odd/current_retailer",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setOdd(response.data.odds);
+      return response.data;
+    } catch (error) {
+      Notification({
+        message: "Something went wrong",
+        type: "error",
+      });
+      console.error("Error fetching data:", error);
+      window.location.href = "/login";
+    }
+  };
 
   useEffect(() => {
     const endTime = new Date(data?.endTime).getTime();
@@ -100,66 +125,16 @@ const KenoScreen = function () {
 
   useEffect(generateRandomIntegers, [quickPickValue, dispatch]);
 
-  const payoutList = {
-    10: [
-      [0, 1],
-      [4, 2],
-      [5, 4],
-      [6, 12],
-      [7, 40],
-      [8, 400],
-      [9, 2500],
-      [10, 5000],
-    ],
-    9: [
-      [0, 1],
-      [4, 3],
-      [5, 6],
-      [6, 18],
-      [7, 120],
-      [8, 1800],
-      [9, 4200],
-    ],
-    8: [
-      [0, 1],
-      [4, 4],
-      [5, 8],
-      [6, 68],
-      [7, 600],
-      [8, 3000],
-    ],
-    7: [
-      [0, 1],
-      [3, 1],
-      [4, 6],
-      [5, 12],
-      [6, 120],
-      [7, 2150],
-    ],
-    6: [
-      [3, 1],
-      [4, 10],
-      [5, 70],
-      [6, 1800],
-    ],
-    5: [
-      [2, 1],
-      [3, 3],
-      [4, 15],
-      [5, 300],
-    ],
-    4: [
-      [2, 1],
-      [3, 8],
-      [4, 100],
-    ],
-    3: [
-      [2, 3],
-      [3, 35],
-    ],
-    2: [[2, 15]],
-    1: [[1, 3.8]],
-  };
+  const payoutList = {};
+  for (let key in odd) {
+    const payouts = [];
+    for (let i = 0; i <= parseInt(key); i++) {
+      if (odd[key][i.toString()]) {
+        payouts.push([i, odd[key][i.toString()]]);
+      }
+    }
+    payoutList[key] = payouts;
+  }
 
   const addToBetslipHeadTail = (event) => {
     dispatch(

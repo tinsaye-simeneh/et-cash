@@ -6,6 +6,31 @@ import { getReportAction } from "../../../stores/reports/getReportAction";
 import { useDispatch } from "react-redux";
 import { FaSpinner } from "react-icons/fa";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const Summary = () => {
   const initialDateFrom = new Date();
@@ -20,6 +45,45 @@ const Summary = () => {
   const [selectedDateTo, setSelectedDateTo] = useState(initialDateTo);
   const dispatch = useDispatch();
   let username = localStorage.getItem("username");
+  const [printerOnline, setPrinterOnline] = useState("");
+  const [printerLink, setPrinterLink] = useState("");
+
+  const { userAgent } = navigator;
+  let os = "";
+
+  useEffect(() => {
+    if (userAgent.indexOf("Win") !== -1) {
+      if (userAgent.indexOf("Windows NT 10.0") !== -1) os += "10";
+      if (userAgent.indexOf("Windows NT 6.2") !== -1) os += "8";
+      if (userAgent.indexOf("Windows NT 6.1") !== -1) os += "7";
+      if (userAgent.indexOf("Windows NT 6.0") !== -1) os += "Vista";
+      if (userAgent.indexOf("Windows NT 5.1") !== -1) os += "XP";
+    } else if (userAgent.indexOf("Mac") !== -1) {
+      os = "MacOS";
+    } else if (userAgent.indexOf("X11") !== -1) {
+      os = "UNIX";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      os = "Linux";
+    }
+
+    if (os === "7") {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    } else if (os === "10") {
+      setPrinterOnline("http://localhost:8084/isonline");
+      setPrinterLink("http://localhost:8084/print");
+    } else {
+      setPrinterOnline("http://localhost:8080/ISONLINE/ISONLINE");
+      setPrinterLink("http://localhost:8080/PRINT");
+    }
+  }, [
+    userAgent,
+    setPrinterOnline,
+    setPrinterLink,
+    os,
+    setPrinterOnline,
+    setPrinterLink,
+  ]);
 
   const formatDateTime = (date) => {
     const year = date.getFullYear();
@@ -45,6 +109,7 @@ const Summary = () => {
 
   const handleRefresh = async () => {
     setLoading(true);
+    setData(null);
     const body = {
       startTime: formatDateTime(selectedDateFrom),
       endTime: formatDateTime(selectedDateTo),
@@ -53,7 +118,7 @@ const Summary = () => {
       const response = await dispatch(getReportAction({ body }));
 
       if (response.payload) {
-        setDisabled(true);
+        // setDisabled(true);
 
         const cashierUsername = localStorage.getItem("username");
 
@@ -65,7 +130,17 @@ const Summary = () => {
           setData(filteredData[0]);
         } else {
           setLoading(false);
-          setData(null);
+          setData([
+            {
+              bets: 0,
+              betWinnings: 0,
+              cancellations: 0,
+              redeemed: 0,
+              unclaimed: 0,
+              net: 0,
+              cashierUsername: cashierUsername,
+            },
+          ]);
         }
       }
     } catch (error) {
@@ -80,7 +155,11 @@ const Summary = () => {
   };
 
   const handleExportToExcel = () => {
-    if (data === null) return alert("No data to export");
+    if (data === null)
+      return Notification({
+        message: "No data to export",
+        type: "error",
+      });
     else {
       let csv = [];
       const selectedDateFromSliced = selectedDateFrom
@@ -278,7 +357,7 @@ const Summary = () => {
 
   const handlePrint = async () => {
     try {
-      const printResponse = await fetch("http://localhost:8084/print", {
+      const printResponse = await fetch(printerLink, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -293,11 +372,14 @@ const Summary = () => {
 
   const handlePrintAndCheckOnlineStatus = async () => {
     try {
-      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      const onlineResponse = await axios.post(printerOnline);
       if (onlineResponse.data) {
         handlePrint();
       } else {
-        alert("please plug a printer");
+        Notification({
+          message: "Printer is offline",
+          type: "error",
+        });
       }
     } catch (error) {}
   };
@@ -412,21 +494,29 @@ const Summary = () => {
                 </tr>
               </thead>
               <tbody className="border-t-[1px] border-gray-500">
-                {data?.length === 0 ||
+                {/* {data?.length === 0 ||
                   (data === null && !loading && (
                     <tr>
                       <td
                         colSpan={10}
                         className="border-s-[1px] pl-5 border-gray-500 whitespace-nowrap text-center py-5"
+                        style={{
+                          fontSize: "1.3rem",
+                        }}
                       >
                         No data found
                       </td>
                     </tr>
-                  ))}
+                  ))} */}
                 {loading && data === null && (
                   <tr>
                     <td colSpan={10} className="py-5 text-center">
-                      <div className="flex items-center justify-center">
+                      <div
+                        className="flex items-center justify-center"
+                        style={{
+                          fontSize: "1.5rem",
+                        }}
+                      >
                         <FaSpinner className="mr-2 text-green-500 animate-spin" />{" "}
                         Loading...
                       </div>

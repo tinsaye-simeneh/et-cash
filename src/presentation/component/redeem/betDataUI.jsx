@@ -3,12 +3,77 @@ import { BiDollar } from "react-icons/bi";
 import { redeemAction } from "../../../stores/bet/redeemAction";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const BetDataUI = (props) => {
   const { betData } = props;
   const [errMessage, setErrMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [osVersion, setOsVersion] = useState("");
+  const [printerOnline, setPrinterOnline] = useState("");
+  const [printerLink, setPrinterLink] = useState("");
+
+  const getOS = () => {
+    const { userAgent } = navigator;
+    let os = "Unknown OS";
+
+    if (userAgent.indexOf("Win") !== -1) {
+      os = "";
+      if (userAgent.indexOf("Windows NT 10.0") !== -1) os += " 10";
+      if (userAgent.indexOf("Windows NT 6.2") !== -1) os += " 8";
+      if (userAgent.indexOf("Windows NT 6.1") !== -1) os += " 7";
+      if (userAgent.indexOf("Windows NT 6.0") !== -1) os += " Vista";
+      if (userAgent.indexOf("Windows NT 5.1") !== -1) os += " XP";
+    } else if (userAgent.indexOf("Mac") !== -1) {
+      os = "MacOS";
+    } else if (userAgent.indexOf("X11") !== -1) {
+      os = "UNIX";
+    } else if (userAgent.indexOf("Linux") !== -1) {
+      os = "Linux";
+    }
+
+    setOsVersion(os);
+    return os;
+  };
+
+  useEffect(() => {
+    getOS();
+    if (osVersion === "7") {
+      setPrinterOnline("http://localhost:8080/isonline");
+      setPrinterLink("http://localhost:8080/PRINT");
+    } else if (osVersion === "10") {
+      setPrinterOnline("http://localhost:8084/isonline");
+      setPrinterLink("http://localhost:8084/print");
+    } else {
+      setPrinterOnline("http://localhost:8080/isonline");
+      setPrinterLink("http://localhost:8080/PRINT");
+    }
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -186,7 +251,7 @@ const BetDataUI = (props) => {
 
   const handlePrint = async () => {
     try {
-      const printResponse = await fetch("http://localhost:8084/print", {
+      const printResponse = await fetch(printerLink, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -201,11 +266,14 @@ const BetDataUI = (props) => {
 
   const handlePrintAndCheckOnlineStatus = async () => {
     try {
-      const onlineResponse = await axios.post("http://localhost:8084/isonline");
+      const onlineResponse = await axios.post(printerOnline);
       if (onlineResponse.data) {
         handlePrint();
       } else {
-        alert("please plug a printer");
+        Notification({
+          message: "Printer is offline. Please check the printer connection",
+          type: "error",
+        });
       }
     } catch (error) {}
   };
@@ -225,7 +293,10 @@ const BetDataUI = (props) => {
           );
         }
       } catch (error) {
-        alert("Something went wrong");
+        Notification({
+          message: "An error occurred. Please try again later",
+          type: "error",
+        });
       }
     }
   };

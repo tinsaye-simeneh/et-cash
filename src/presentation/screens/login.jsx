@@ -1,7 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { LoginAction } from "../../stores/auth/authAction";
 import { useDispatch } from "react-redux";
-import { getRetailerAction } from "../../stores/retailer/getRetailerAction";
+import { toast } from "react-toastify";
+
+const Notification = ({ message, type }) => {
+  if (type === "error") {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  } else {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+};
 
 const Login = () => {
   const passWordRef = useRef();
@@ -32,26 +56,32 @@ const Login = () => {
         localStorage.setItem("assignedTo", response.payload.assignedTo);
         localStorage.setItem("firstname", response.payload.firstname);
         localStorage.setItem("lastname", response.payload.lastname);
+        localStorage.setItem("retailerName", response.payload.assignedTo);
 
-        try {
-          const response = await dispatch(
-            getRetailerAction(localStorage.getItem("assignedTo"))
-          );
-          if (response.payload) {
-            window.location.href = "/";
-            localStorage.setItem("retailerName", response.payload.username);
-          } else {
-            alert(
-              "The User is not assigned to any retailer, Please Login again"
-            );
-            window.reload();
-          }
-        } catch (error) {
-          alert("Something went wrong");
-        }
+        window.location.href = "/";
+
+        // try {
+        //   const response = await dispatch(
+        //     getRetailerAction(localStorage.getItem("assignedTo"))
+        //   );
+        //   if (response.payload) {
+        //     window.location.href = "/";
+        //     localStorage.setItem("retailerName", response.payload.username);
+        //   } else {
+        //     alert(
+        //       "The User is not assigned to any retailer, Please Login again"
+        //     );
+        //     window.reload();
+        //   }
+        // } catch (error) {
+        //   alert("Something went wrong");
+        // }
       } else {
         setDisabled(false);
-        alert("Network Error, Please check your connection");
+        Notification({
+          message: "Invalid Username or Password",
+          type: "error",
+        });
       }
     } catch (error) {
       setDisabled(false);
